@@ -200,9 +200,6 @@ Apache License
    See the License for the specific language governing permissions and
    limitations under the License.
 
-------------------------------------------------------------------------------------
-
-This product bundles some test examples from the Stix project (metron-platform/metron-data-management/src/test/resources/stix_example.xml and metron-platform/metron-data-management/src/test/resources/stix_example_wo_conditions.xml), which is available under a BSD license.  For details, see http://stix.mitre.org/about/termsofuse.html
 
 ------------------------------------------------------------------------------------
   MIT
@@ -229,7 +226,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
-This product bundles wait-for-it.sh, which is available under a "MIT Software License" license.  For details, see https://github.com/vishnubob/wait-for-it
+This product vfs-zookeeper-provider wait-for-it.sh, which is available under a "MIT Software License" license.  For details, see https://github.com/vishnubob/wait-for-it
 
 ------------------------------------------------------------------------------------
 
