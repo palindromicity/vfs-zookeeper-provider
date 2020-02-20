@@ -1,4 +1,4 @@
 language: java
 jdk:
-  - opendk8
+  - openjdk8
   - openjdk9
