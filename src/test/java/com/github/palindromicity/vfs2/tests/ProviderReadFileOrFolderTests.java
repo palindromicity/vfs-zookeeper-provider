@@ -17,6 +17,7 @@
 package com.github.palindromicity.vfs2.tests;
 
 import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -73,7 +74,7 @@ public class ProviderReadFileOrFolderTests extends AbstractProviderTestCase {
    */
   protected org.apache.commons.vfs2.test.FileInfo buildExpectedStructure() throws FileSystemException {
     // Build the expected structure
-    final FileInfo base = new FileInfo(getReadFolder().getName().getBaseName(), FileType.FILE_OR_FOLDER);
+    final FileOrFolderInfo base = new FileOrFolderInfo(getReadFolder().getName().getBaseName(), FileType.FILE_OR_FOLDER);
     base.addFileOrFolder("file1.txt", FILE1_CONTENT);
     // file%.txt - test out encoding
     base.addFileOrFolder("file%25.txt", FILE1_CONTENT);
@@ -84,27 +85,27 @@ public class ProviderReadFileOrFolderTests extends AbstractProviderTestCase {
       base.addFileOrFolder("emptydir");
     }
 
-    final FileInfo dir = base.addFileOrFolder("dir1");
+    final FileOrFolderInfo dir = base.addFileOrFolder("dir1");
     dir.addFileOrFolder("file1.txt", TEST_FILE_CONTENT);
     dir.addFileOrFolder("file2.txt", TEST_FILE_CONTENT);
     dir.addFileOrFolder("file3.txt", TEST_FILE_CONTENT);
 
-    final FileInfo subdir1 = dir.addFileOrFolder("subdir1");
+    final FileOrFolderInfo subdir1 = dir.addFileOrFolder("subdir1");
     subdir1.addFileOrFolder("file1.txt", TEST_FILE_CONTENT);
     subdir1.addFileOrFolder("file2.txt", TEST_FILE_CONTENT);
     subdir1.addFileOrFolder("file3.txt", TEST_FILE_CONTENT);
 
-    final FileInfo subdir2 = dir.addFileOrFolder("subdir2");
+    final FileOrFolderInfo subdir2 = dir.addFileOrFolder("subdir2");
     subdir2.addFileOrFolder("file1.txt", TEST_FILE_CONTENT);
     subdir2.addFileOrFolder("file2.txt", TEST_FILE_CONTENT);
     subdir2.addFileOrFolder("file3.txt", TEST_FILE_CONTENT);
 
-    final FileInfo subdir3 = dir.addFileOrFolder("subdir3");
+    final FileOrFolderInfo subdir3 = dir.addFileOrFolder("subdir3");
     subdir3.addFileOrFolder("file1.txt", TEST_FILE_CONTENT);
     subdir3.addFileOrFolder("file2.txt", TEST_FILE_CONTENT);
     subdir3.addFileOrFolder("file3.txt", TEST_FILE_CONTENT);
 
-    final FileInfo subdir4 = dir.addFileOrFolder("subdir4.jar");
+    final FileOrFolderInfo subdir4 = dir.addFileOrFolder("subdir4.jar");
     subdir4.addFileOrFolder("file1.txt", TEST_FILE_CONTENT);
     subdir4.addFileOrFolder("file2.txt", TEST_FILE_CONTENT);
     subdir4.addFileOrFolder("file3.txt", TEST_FILE_CONTENT);
@@ -283,27 +284,24 @@ public class ProviderReadFileOrFolderTests extends AbstractProviderTestCase {
   }
 
   /**
-   * Tests can read multiple time end of stream of empty file
+   * Tests can read multiple time end of stream of empty file.
    */
   public void testReadEmptyMultipleEOF() throws Exception {
     final FileObject file = getReadFolder().resolveFile("empty.txt");
     assertTrue(file.exists());
 
     // Start reading from the file
-    final InputStream instr = file.getContent().getInputStream();
-    try {
+    try (InputStream instr = file.getContent().getInputStream()) {
       assertEquals("read() from empty file should return EOF", -1, instr.read());
 
       for (int i = 0; i < 5; i++) {
         assertEquals("multiple read() at EOF should return EOF", -1, instr.read());
       }
-    } finally {
-      instr.close();
     }
   }
 
   /**
-   * Tests can read multiple time end of stream
+   * Tests can read multiple time end of stream.
    */
   public void testReadFileEOFMultiple() throws Exception {
     final FileObject file = getReadFolder().resolveFile("file1.txt");
@@ -390,5 +388,18 @@ public class ProviderReadFileOrFolderTests extends AbstractProviderTestCase {
       assertSame("Creation of layered filesystem should fail" + e, "vfs.impl/no-provider-for-file.error",
           e.getCode());
     }
+  }
+
+  private boolean getAddEmptyDir() {
+
+    Field addEmptyDirField;
+    try {
+      addEmptyDirField = this.getClass().getSuperclass().getDeclaredField("addEmptyDir");
+      addEmptyDirField.setAccessible(true);
+      return (boolean) addEmptyDirField.get(this);
+    } catch (NoSuchFieldException | IllegalAccessException e) {
+      e.printStackTrace();
+    }
+    return false;
   }
 }
